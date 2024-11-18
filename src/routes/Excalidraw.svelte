@@ -1,30 +1,28 @@
 <script lang="ts">
-	import type { ExcalidrawProps } from '@excalidraw/excalidraw/types/types'
 	import { createElement } from 'react'
 	import { createRoot } from 'react-dom/client'
+	import type { ExcalidrawProps } from '@excalidraw/excalidraw/types/types'
 
 	let props: ExcalidrawProps = $props()
 	let rootEl: HTMLElement
 
-	// @ts-ignore
-	$effect(async () => {
-		const { Excalidraw, WelcomeScreen, MainMenu } = await import('@excalidraw/excalidraw')
-
+	$effect(() => {
 		const root = createRoot(rootEl)
-		root.render(
-			createElement(Excalidraw, { ...props }, [
-				createElement(WelcomeScreen, { key: 'WelcomeScreen' }),
-				createElement(MainMenu, { key: 'MainMenu' }, [
-					createElement(MainMenu.DefaultItems.LoadScene, { key: 'LoadScene' }),
-					createElement(MainMenu.DefaultItems.SaveAsImage, { key: 'SaveAsImage' }),
-					createElement(MainMenu.DefaultItems.Export, { key: 'Export' }),
-					createElement(MainMenu.Separator, { key: 'Separator' }),
-					createElement(MainMenu.DefaultItems.ChangeCanvasBackground, {
-						key: 'ChangeCanvasBackground',
-					}),
-				]),
+
+		import('@excalidraw/excalidraw').then(({ Excalidraw, WelcomeScreen, MainMenu }) => {
+			const welcome = createElement(WelcomeScreen, { key: 'WelcomeScreen' })
+			const menu = createElement(MainMenu, { key: 'MainMenu' }, [
+				createElement(MainMenu.DefaultItems.LoadScene, { key: 'LoadScene' }),
+				createElement(MainMenu.DefaultItems.SaveAsImage, { key: 'SaveAsImage' }),
+				createElement(MainMenu.DefaultItems.Export, { key: 'Export' }),
+				createElement(MainMenu.Separator, { key: 'Separator' }),
+				createElement(MainMenu.DefaultItems.ChangeCanvasBackground, {
+					key: 'ChangeCanvasBackground',
+				}),
 			])
-		)
+			const excalidraw = createElement(Excalidraw, { ...props }, [welcome, menu])
+			root.render(excalidraw)
+		})
 
 		return () => root.unmount()
 	})
